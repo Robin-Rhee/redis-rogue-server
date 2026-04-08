@@ -4,7 +4,7 @@ import sys
 from time import sleep
 from optparse import OptionParser
 
-CRLF = CRLF
+CRLF = "\r\n"
 SERVER_EXP_MOD_FILE = "exp.so"
 
 BANNER = """______         _ _      ______                         _____                          
