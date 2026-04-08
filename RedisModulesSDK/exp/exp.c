@@ -21,7 +21,7 @@ int DoCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
 		output = (char *)malloc(size);
 		while ( fgets(buf, sizeof(buf), fp) != 0 ) {
 			if (strlen(buf) + strlen(output) >= size) {
-				output = realloc(output, size<<2);
+				output = realloc(output, size<<1);
 				size <<= 1;
 			}
 			strcat(output, buf);
