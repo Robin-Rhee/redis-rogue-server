@@ -26,8 +26,12 @@ all: rmutil exp.so
 rmutil: FORCE
 	$(MAKE) -C $(RMUTIL_LIBDIR)
 
-exp.so: exp.o
-	$(LD) -o $@ exp.o $(SHOBJ_LDFLAGS) $(LIBS) -L$(RMUTIL_LIBDIR) -lrmutil -lc 
+#exp.so: exp.o
+#	$(LD) -o $@ exp.o $(SHOBJ_LDFLAGS) $(LIBS) -L$(RMUTIL_LIBDIR) -lrmutil -lc 
+
+exp.so: exp.c
+	$(CC) -o $@ $< $(CFLAGS) $(SHOBJ_LDFLAGS) -L$(RMUTIL_LIBDIR) -lrmutil -lc
+	mv exp.so ~/redis-rogue-server
 
 clean:
 	rm -rf *.xo *.so *.o
